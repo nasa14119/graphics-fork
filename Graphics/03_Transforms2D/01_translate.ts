@@ -6,66 +6,65 @@
  * 2024-07-12
  */
 
+"use strict";
 
-'use strict';
-
-import * as twgl from 'twgl-base.js'
-import { shapeF } from '../libs/shapes.js'
+import * as twgl from "twgl-base.js";
+import { shapeF } from "../libs/shapes.js";
 
 // Import the shaders from external files
-import vsGLSL from './vs_01_translate.glsl?raw';
-import fsGLSL from './fs_flat_color.glsl?raw';
+import vsGLSL from "./vs_01_translate.glsl?raw";
+import fsGLSL from "./fs_flat_color.glsl?raw";
 
 function main(): void {
-    const canvas = document.querySelector('canvas');
-    if (!canvas) {
-        throw new Error('No canvas element found in the document');
-    }
+  const canvas = document.querySelector("canvas");
+  if (!canvas) {
+    throw new Error("No canvas element found in the document");
+  }
 
-    const gl = canvas.getContext('webgl2');
-    if (!gl) {
-        throw new Error('WebGL2 is not supported by this browser');
-    }
+  const gl = canvas.getContext("webgl2");
+  if (!gl) {
+    throw new Error("WebGL2 is not supported by this browser");
+  }
 
-    const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
+  const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
-    const arrays = shapeF();
+  const arrays = shapeF();
 
-    const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+  const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-    const vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
+  const vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
 
-    drawScene(gl, vao, programInfo, bufferInfo);
+  drawScene(gl, vao, programInfo, bufferInfo);
 }
 
 // Function to do the actual display of the objects
 function drawScene(
-    gl: WebGL2RenderingContext,
-    vao: WebGLVertexArrayObject,
-    programInfo: twgl.ProgramInfo,
-    bufferInfo: twgl.BufferInfo,
+  gl: WebGL2RenderingContext,
+  vao: WebGLVertexArrayObject,
+  programInfo: twgl.ProgramInfo,
+  bufferInfo: twgl.BufferInfo,
 ): void {
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  twgl.resizeCanvasToDisplaySize(gl.canvas);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    // Variable to define the translation of the object
-    const translation = [100, 300];
+  // Variable to define the translation of the object
+  const translation = [100, 300];
 
-    // TODO: Add the translation as another uniform
-    let uniforms =
-    {
-        u_resolution: [gl.canvas.width, gl.canvas.height],
-        u_color: [Math.random(), Math.random(), Math.random(), 1],
-    }
-    console.log(uniforms);
+  // TODO: Add the translation as another uniform
+  let uniforms = {
+    u_resolution: [gl.canvas.width, gl.canvas.height],
+    u_translation: translation,
+    u_color: [Math.random(), Math.random(), Math.random(), 1],
+  };
+  console.log(uniforms);
 
-    gl.useProgram(programInfo.program);
+  gl.useProgram(programInfo.program);
 
-    twgl.setUniforms(programInfo, uniforms);
+  twgl.setUniforms(programInfo, uniforms);
 
-    gl.bindVertexArray(vao);
+  gl.bindVertexArray(vao);
 
-    twgl.drawBufferInfo(gl, bufferInfo);
+  twgl.drawBufferInfo(gl, bufferInfo);
 }
 
-main()
+main();
